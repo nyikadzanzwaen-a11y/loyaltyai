@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+{% block title %}Analytics - {{ business.name }}{% endblock %}
+{% block content %}
+<div class="bg-gray-100 min-h-screen">
+  {% include 'tenants/_business_banner.html' with active_tab='analytics' %}
+  <div class="container mx-auto px-4 py-8">
+  <h1 class="text-2xl font-bold mb-6">Analytics - {{ business.name }}</h1>
+
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+    <div class="bg-white p-4 shadow rounded">
+      <div class="text-gray-500 text-sm">Total Points Issued</div>
+      <div class="text-2xl font-bold">{{ points_data.total_points_issued|default:0 }}</div>
+    </div>
+    <div class="bg-white p-4 shadow rounded">
+      <div class="text-gray-500 text-sm">Total Points Redeemed</div>
+      <div class="text-2xl font-bold">{{ points_data.total_points_redeemed|default:0 }}</div>
+    </div>
+    <div class="bg-white p-4 shadow rounded">
+      <div class="text-gray-500 text-sm">Points Issued (30d)</div>
+      <div class="text-2xl font-bold">{{ points_data.recent_points_issued|default:0 }}</div>
+    </div>
+  </div>
+  
+  <h2 class="text-xl font-semibold mb-2">Top Offers</h2>
+  <div class="bg-white shadow rounded overflow-hidden mb-8">
+    <table class="min-w-full divide-y divide-gray-200">
+      <thead class="bg-gray-50">
+        <tr>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Offer Title</th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Total Redemptions</th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Points Used</th>
+        </tr>
+      </thead>
+      <tbody class="bg-white divide-y divide-gray-200">
+        {% for m in offer_metrics %}
+        <tr>
+          <td class="px-6 py-4">{{ m.offer__title }}</td>
+          <td class="px-6 py-4">{{ m.total_redemptions }}</td>
+          <td class="px-6 py-4">{{ m.points_used|default:0 }}</td>
+        </tr>
+        {% empty %}
+        <tr><td class="px-6 py-4" colspan="3">No data yet.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <h2 class="text-xl font-semibold mb-2">Customer Metrics</h2>
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+    <div class="bg-white p-4 shadow rounded">
+      <div class="text-gray-500 text-sm">Total Customers</div>
+      <div class="text-2xl font-bold">{{ customer_metrics.total_customers }}</div>
+    </div>
+    <div class="bg-white p-4 shadow rounded">
+      <div class="text-gray-500 text-sm">Active (30d)</div>
+      <div class="text-2xl font-bold">{{ customer_metrics.active_customers }}</div>
+    </div>
+    <div class="bg-white p-4 shadow rounded">
+      <div class="text-gray-500 text-sm">At Risk</div>
+      <div class="text-2xl font-bold">{{ customer_metrics.at_risk_customers }}</div>
+    </div>
+  </div>
+  </div>
+</div>
+{% endblock %}
+{% block footer %}{% endblock %}

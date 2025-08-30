@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+{% block title %}Delete Offer - {{ business.name }}{% endblock %}
+{% block content %}
+<div class="container mx-auto px-4 py-8 max-w-xl">
+  <h1 class="text-2xl font-bold mb-4">Delete Offer</h1>
+  <p class="mb-6">Are you sure you want to delete the offer <span class="font-semibold">{{ object.title }}</span>? This action cannot be undone.</p>
+  <form method="post" class="space-x-3">
+    {% csrf_token %}
+    <button type="submit" class="bg-red-700 text-white px-4 py-2 rounded-md hover:bg-red-600">Confirm Delete</button>
+    <a href="{% url 'business_offers' slug=business.slug %}" class="px-4 py-2 rounded-md border border-gray-300 text-gray-700 hover:bg-gray-50">Cancel</a>
+  </form>
+</div>
+{% endblock %}

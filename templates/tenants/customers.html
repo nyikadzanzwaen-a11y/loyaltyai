@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+{% block title %}Customers - {{ business.name }}{% endblock %}
+{% block content %}
+<div class="bg-gray-100 min-h-screen">
+  {% include 'tenants/_business_banner.html' with active_tab='customers' %}
+  <div class="container mx-auto px-4 py-8">
+  <div class="flex items-center justify-between mb-6">
+    <h1 class="text-2xl font-bold">Customers - {{ business.name }}</h1>
+    <div>
+      <button id="createSegmentsBtn" class="bg-indigo-700 text-white px-4 py-2 rounded-md hover:bg-indigo-600">Create Segments (AI)</button>
+    </div>
+  </div>
+
+  
+
+  {% if wallets %}
+  <div class="bg-white shadow rounded-md overflow-hidden">
+    <table class="min-w-full divide-y divide-gray-200">
+      <thead class="bg-gray-50">
+        <tr>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Customer</th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Points</th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Tier</th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Last Activity</th>
+        </tr>
+      </thead>
+      <tbody class="bg-white divide-y divide-gray-200">
+        {% for wallet in wallets %}
+        <tr>
+          <td class="px-6 py-4">{{ wallet.customer.email }}</td>
+          <td class="px-6 py-4 font-semibold">{{ wallet.points_balance }}</td>
+          <td class="px-6 py-4">{{ wallet.current_tier|default:"-" }}</td>
+          <td class="px-6 py-4">{{ wallet.last_activity|date:"Y-m-d H:i" }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+    <p class="text-gray-600">No customers yet.</p>
+  {% endif %}
+
+  <div id="segmentsResult" class="mt-4 text-sm text-gray-700"></div>
+  </div>
+</div>
+{% endblock %}
+{% block extra_js %}
+<script>
+  const btn = document.getElementById('createSegmentsBtn');
+  if (btn) {
+    btn.addEventListener('click', async () => {
+      btn.disabled = true;
+      btn.textContent = 'Creating...';
+      try {
+        const resp = await fetch("{% url 'create_segments' slug=business.slug %}");
+        const data = await resp.json();
+        document.getElementById('segmentsResult').textContent = JSON.stringify(data);
+      } catch (e) {
+        document.getElementById('segmentsResult').textContent = 'Error creating segments.';
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Create Segments (AI)';
+      }
+    });
+  }
+  </script>
+{% endblock %}

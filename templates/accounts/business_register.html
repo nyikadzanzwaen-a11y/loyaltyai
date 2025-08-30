@@ -1,0 +1,228 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Register Your Business - LoyaltyAI{% endblock %}
+
+{% block content %}
+<div class="bg-gray-50 py-12">
+  <div class="container mx-auto px-4">
+    <div class="max-w-3xl mx-auto">
+      <div class="text-center mb-10">
+        <h1 class="text-4xl font-bold text-gray-800 mb-3">Join the LoyaltyAI Network</h1>
+        <p class="text-lg text-gray-600">Register your business and start creating engaging loyalty experiences for your customers.</p>
+      </div>
+      
+      <div class="bg-white shadow-md rounded-lg p-8">
+        <form id="businessRegistrationForm" class="space-y-6">
+          {% csrf_token %}
+          
+          <!-- Business Information -->
+          <div>
+            <h2 class="text-xl font-bold text-gray-800 mb-4">Business Information</h2>
+            <div class="grid md:grid-cols-2 gap-6">
+              <div>
+                <label for="name" class="block text-sm font-medium text-gray-700 mb-1">Business Name *</label>
+                <input type="text" id="name" name="name" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+              </div>
+              
+              <div>
+                <label for="category" class="block text-sm font-medium text-gray-700 mb-1">Business Category *</label>
+                <select id="category" name="category" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                  <option value="" selected disabled>Select a category</option>
+                  <option value="retail">Retail</option>
+                  <option value="restaurant">Restaurant</option>
+                  <option value="hospitality">Hospitality</option>
+                  <option value="beauty">Beauty & Wellness</option>
+                  <option value="entertainment">Entertainment</option>
+                  <option value="travel">Travel</option>
+                  <option value="other">Other</option>
+                </select>
+              </div>
+              
+              <div>
+                <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Business Email *</label>
+                <input type="email" id="email" name="email" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                <p class="mt-1 text-xs text-gray-500">This email will be used for login and notifications</p>
+              </div>
+              
+              <div>
+                <label for="phone" class="block text-sm font-medium text-gray-700 mb-1">Business Phone</label>
+                <input type="tel" id="phone" name="phone" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+              </div>
+              
+              <div class="md:col-span-2">
+                <label for="description" class="block text-sm font-medium text-gray-700 mb-1">Business Description</label>
+                <textarea id="description" name="description" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
+                <p class="mt-1 text-xs text-gray-500">Tell customers a bit about your business</p>
+              </div>
+              
+              <div>
+                <label for="website" class="block text-sm font-medium text-gray-700 mb-1">Website</label>
+                <input type="url" id="website" name="website" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+              </div>
+              
+              <div>
+                <label for="logo" class="block text-sm font-medium text-gray-700 mb-1">Business Logo</label>
+                <input type="file" id="logo" name="logo" accept="image/*" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <p class="mt-1 text-xs text-gray-500">Recommended size: 512x512px</p>
+              </div>
+            </div>
+          </div>
+          
+          <hr class="my-8">
+          
+          <!-- Account Setup -->
+          <div>
+            <h2 class="text-xl font-bold text-gray-800 mb-4">Account Setup</h2>
+            <div class="grid md:grid-cols-2 gap-6">
+              <div>
+                <label for="password" class="block text-sm font-medium text-gray-700 mb-1">Password *</label>
+                <input type="password" id="password" name="password" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                <p class="mt-1 text-xs text-gray-500">Minimum 8 characters</p>
+              </div>
+              
+              <div>
+                <label for="confirm_password" class="block text-sm font-medium text-gray-700 mb-1">Confirm Password *</label>
+                <input type="password" id="confirm_password" name="confirm_password" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+              </div>
+            </div>
+          </div>
+          
+          <hr class="my-8">
+          
+          <!-- Loyalty Program Settings -->
+          <div>
+            <h2 class="text-xl font-bold text-gray-800 mb-4">Loyalty Program Settings</h2>
+            <div class="grid md:grid-cols-2 gap-6">
+              <div>
+                <label for="points_per_currency" class="block text-sm font-medium text-gray-700 mb-1">Points per currency unit</label>
+                <input type="number" id="points_per_currency" name="points_per_currency" value="1" min="1" max="100" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <p class="mt-1 text-xs text-gray-500">How many points customers earn per $1 spent</p>
+              </div>
+              
+              <div>
+                <label for="point_value" class="block text-sm font-medium text-gray-700 mb-1">Point value (in $)</label>
+                <input type="number" id="point_value" name="point_value" value="0.01" min="0.01" step="0.01" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <p class="mt-1 text-xs text-gray-500">Value of each point in dollars</p>
+              </div>
+              
+              <div class="md:col-span-2">
+                <div class="flex items-center">
+                  <input type="checkbox" id="enable_cross_business" name="enable_cross_business" class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded" checked>
+                  <label for="enable_cross_business" class="ml-2 block text-sm text-gray-700">
+                    Enable cross-business redemptions
+                  </label>
+                </div>
+                <p class="mt-1 text-xs text-gray-500 ml-6">Allow customers to redeem points earned at other businesses in the network</p>
+              </div>
+            </div>
+          </div>
+          
+          <div class="flex items-center mt-8">
+            <input type="checkbox" id="terms" name="terms" class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded" required>
+            <label for="terms" class="ml-2 block text-sm text-gray-700">
+              I agree to the <a href="#" class="text-blue-600 hover:underline">Terms and Conditions</a> and <a href="#" class="text-blue-600 hover:underline">Privacy Policy</a>
+            </label>
+          </div>
+          
+          <div class="mt-8">
+            <button type="submit" class="w-full py-3 px-4 bg-blue-800 hover:bg-blue-700 text-white font-bold rounded-md transition focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+              Register Business
+            </button>
+          </div>
+          
+          <div id="registrationError" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mt-4 hidden" role="alert">
+            <strong class="font-bold">Registration Error!</strong>
+            <span id="errorMessage" class="block sm:inline"></span>
+          </div>
+        </form>
+      </div>
+      
+      <div class="mt-6 text-center">
+        <p class="text-gray-600">Already have an account? <a href="{% url 'login' %}" class="text-blue-600 hover:underline">Log In</a></p>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const form = document.getElementById('businessRegistrationForm');
+  
+  form.addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const formData = new FormData(form);
+    
+    // Password validation
+    const password = formData.get('password');
+    const confirmPassword = formData.get('confirm_password');
+    
+    if (password !== confirmPassword) {
+      showError('Passwords do not match. Please try again.');
+      return;
+    }
+    
+    if (password.length < 8) {
+      showError('Password must be at least 8 characters long.');
+      return;
+    }
+    
+    // Send form data to API
+    fetch('/api/businesses/', {
+      method: 'POST',
+      body: formData,
+      headers: {
+        'X-CSRFToken': formData.get('csrfmiddlewaretoken'),
+        'Accept': 'application/json',
+        'X-Requested-With': 'XMLHttpRequest'
+      },
+      credentials: 'same-origin'
+    })
+    .then(async (response) => {
+      const contentType = response.headers.get('content-type') || '';
+      if (!response.ok) {
+        if (contentType.includes('application/json')) {
+          const data = await response.json();
+          const msg = data.detail || (typeof data === 'object' ? Object.values(data).flat().join(' ') : 'Request failed');
+          throw new Error(msg);
+        } else {
+          const text = await response.text();
+          // strip basic HTML tags to show a cleaner message
+          const plain = text.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
+          throw new Error(plain || `Request failed with status ${response.status}`);
+        }
+      }
+      // Success
+      if (contentType.includes('application/json')) {
+        return response.json();
+      } else {
+        // Fallback: try to parse text as JSON
+        const text = await response.text();
+        try { return JSON.parse(text); } catch (e) { throw new Error('Unexpected server response'); }
+      }
+    })
+    .then(data => {
+      // Registration successful
+      window.location.href = `/business/${data.slug}/`;
+    })
+    .catch(error => {
+      showError(error.message || 'An error occurred during registration. Please try again.');
+    });
+  });
+  
+  function showError(message) {
+    const errorDiv = document.getElementById('registrationError');
+    const errorMessage = document.getElementById('errorMessage');
+    
+    errorMessage.textContent = message;
+    errorDiv.classList.remove('hidden');
+    
+    // Scroll to error message
+    errorDiv.scrollIntoView({ behavior: 'smooth' });
+  }
+});
+</script>
+{% endblock %}

@@ -1,0 +1,239 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}{{ business.name }} Dashboard - LoyaltyAI{% endblock %}
+
+{% block extra_css %}
+<style>
+  .stat-card {
+    @apply bg-white rounded-lg shadow-md p-6 transition-all duration-300;
+  }
+  .stat-card:hover {
+    @apply shadow-lg transform -translate-y-1;
+  }
+  .stat-value {
+    @apply text-3xl font-bold text-blue-800;
+  }
+  .stat-label {
+    @apply text-gray-600 text-sm uppercase tracking-wide;
+  }
+</style>
+{% endblock %}
+ 
+{% block content %}
+<div class="bg-gray-100 min-h-screen">
+  {% include 'tenants/_business_banner.html' with active_tab='dashboard' %}
+  
+  <!-- Main Content -->
+  <div class="container mx-auto px-4 py-8">
+    <!-- Key Stats -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+      <div class="stat-card">
+        <div class="flex justify-between items-start">
+          <div>
+            <div class="stat-value">{{ total_customers }}</div>
+            <div class="stat-label">Total Customers</div>
+          </div>
+          <div class="bg-blue-100 text-blue-800 p-3 rounded-full">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+            </svg>
+          </div>
+        </div>
+      </div>
+      
+      <div class="stat-card">
+        <div class="flex justify-between items-start">
+          <div>
+            <div class="stat-value">{{ active_offers }}</div>
+            <div class="stat-label">Active Offers</div>
+          </div>
+          <div class="bg-green-100 text-green-800 p-3 rounded-full">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
+            </svg>
+          </div>
+        </div>
+      </div>
+      
+      <div class="stat-card">
+        <div class="flex justify-between items-start">
+          <div>
+            <div class="stat-value">{{ total_points_issued }}</div>
+            <div class="stat-label">Points Issued</div>
+          </div>
+          <div class="bg-yellow-100 text-yellow-800 p-3 rounded-full">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </div>
+        </div>
+      </div>
+      
+      <div class="stat-card">
+        <div class="flex justify-between items-start">
+          <div>
+            <div class="stat-value">{{ total_points_redeemed }}</div>
+            <div class="stat-label">Points Redeemed</div>
+          </div>
+          <div class="bg-purple-100 text-purple-800 p-3 rounded-full">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
+            </svg>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Main Content Grid -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <!-- Recent Transactions -->
+      <div class="lg:col-span-2">
+        <div class="bg-white rounded-lg shadow-md p-6">
+          <div class="flex justify-between items-center mb-6">
+            <h2 class="text-xl font-bold text-gray-800">Recent Transactions</h2>
+            <a href="#" class="text-blue-600 text-sm hover:underline">View All</a>
+          </div>
+          
+          <div class="overflow-x-auto">
+            <table class="w-full text-left">
+              <thead>
+                <tr class="text-gray-500 border-b">
+                  <th class="pb-3 font-medium">Customer</th>
+                  <th class="pb-3 font-medium">Points</th>
+                  <th class="pb-3 font-medium">Type</th>
+                  <th class="pb-3 font-medium">Date</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for transaction in recent_transactions %}
+                <tr class="border-b text-sm">
+                  <td class="py-3">{{ transaction.wallet.customer.email }}</td>
+                  <td class="py-3 font-medium 
+                    {% if transaction.points > 0 %}text-green-600{% else %}text-red-600{% endif %}">
+                    {{ transaction.points }}
+                  </td>
+                  <td class="py-3 capitalize">{{ transaction.transaction_type }}</td>
+                  <td class="py-3 text-gray-500">{{ transaction.created_at|date:"M d, Y" }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                  <td colspan="4" class="py-4 text-center text-gray-500">No transactions yet</td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      
+      <!-- At Risk Customers -->
+      <div>
+        <div class="bg-white rounded-lg shadow-md p-6">
+          <div class="flex justify-between items-center mb-6">
+            <h2 class="text-xl font-bold text-gray-800">At Risk Customers</h2>
+            <a href="{% url 'business_customers' slug=business.slug %}" class="text-blue-600 text-sm hover:underline">View All</a>
+          </div>
+          
+          <div class="space-y-4">
+            {% for prediction in at_risk_customers %}
+            <div class="flex items-center justify-between">
+              <div class="flex items-center">
+                <div class="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center mr-3">
+                  <span class="text-gray-600 font-medium">{{ prediction.wallet.customer.email|make_list|first|upper }}</span>
+                </div>
+                <div>
+                  <p class="font-medium">{{ prediction.wallet.customer.email }}</p>
+                  <p class="text-sm text-gray-500">Last active {{ prediction.wallet.last_activity|timesince }} ago</p>
+                </div>
+              </div>
+              <div class="text-right">
+                <div class="font-bold text-red-600">{{ prediction.churn_risk_score|floatformat:2 }}</div>
+                <div class="text-xs text-gray-500">Risk Score</div>
+              </div>
+            </div>
+            {% empty %}
+            <p class="text-center text-gray-500 py-4">No at-risk customers detected</p>
+            {% endfor %}
+          </div>
+          
+          <div class="mt-6">
+            <button type="button" class="w-full py-2 px-4 border border-blue-600 rounded-md text-blue-600 hover:bg-blue-50 transition text-center">
+              Generate AI Offer for At-Risk Customers
+            </button>
+          </div>
+        </div>
+        
+        <!-- Quick Actions -->
+        <div class="bg-white rounded-lg shadow-md p-6 mt-6">
+          <h2 class="text-xl font-bold text-gray-800 mb-4">Quick Actions</h2>
+          <div class="space-y-3">
+            <a href="{% url 'business_offers' slug=business.slug %}" class="flex items-center p-3 bg-blue-50 rounded-md hover:bg-blue-100 transition">
+              <div class="bg-blue-100 text-blue-800 p-2 rounded-full mr-3">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
+                </svg>
+              </div>
+              <span class="font-medium">Create New Offer</span>
+            </a>
+            
+            <a href="#" class="flex items-center p-3 bg-green-50 rounded-md hover:bg-green-100 transition">
+              <div class="bg-green-100 text-green-800 p-2 rounded-full mr-3">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                  <path d="M5 3a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2V5a2 2 0 00-2-2H5zM5 11a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2v-2a2 2 0 00-2-2H5zM11 5a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V5zM14 11a1 1 0 011 1v1h1a1 1 0 110 2h-1v1a1 1 0 11-2 0v-1h-1a1 1 0 110-2h1v-1a1 1 0 011-1z" />
+                </svg>
+              </div>
+              <span class="font-medium">Create Customer Segment</span>
+            </a>
+            
+            <a href="#" class="flex items-center p-3 bg-purple-50 rounded-md hover:bg-purple-100 transition">
+              <div class="bg-purple-100 text-purple-800 p-2 rounded-full mr-3">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                  <path d="M2 10a8 8 0 018-8v8h8a8 8 0 11-16 0z" />
+                  <path d="M12 2.252A8.014 8.014 0 0117.748 8H12V2.252z" />
+                </svg>
+              </div>
+              <span class="font-medium">View Analytics</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- AI Insights -->
+    <div class="mt-8">
+      <div class="bg-white rounded-lg shadow-md p-6">
+        <div class="flex justify-between items-center mb-6">
+          <h2 class="text-xl font-bold text-gray-800">AI Insights</h2>
+          <span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full">Powered by LoyaltyAI</span>
+        </div>
+        
+        <div class="grid md:grid-cols-2 gap-6">
+          <div class="border border-gray-200 rounded-lg p-4">
+            <h3 class="font-bold mb-2">Customer Engagement</h3>
+            <p class="text-gray-600 mb-4">Based on recent activity, your customer engagement is trending upward. Consider launching a special promotion to capitalize on this momentum.</p>
+            <div class="flex justify-end">
+              <button class="text-blue-600 text-sm font-medium hover:underline">Generate Promotion</button>
+            </div>
+          </div>
+          
+          <div class="border border-gray-200 rounded-lg p-4">
+            <h3 class="font-bold mb-2">Redemption Patterns</h3>
+            <p class="text-gray-600 mb-4">Customers are most likely to redeem points on weekends. Consider creating time-specific offers to drive mid-week engagement.</p>
+            <div class="flex justify-end">
+              <button class="text-blue-600 text-sm font-medium hover:underline">Create Time-Based Offer</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  // Dashboard JavaScript would go here
+</script>
+{% endblock %}
+{% block footer %}{% endblock %}

@@ -1,0 +1,35 @@
+services:
+  - type: web
+    name: loyalty-platform
+    env: python
+    buildCommand: "pip install -r requirements.txt && python manage.py migrate && python manage.py collectstatic --noinput"
+    startCommand: "gunicorn loyalty_platform.wsgi:application"
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.10.0
+      - key: DJANGO_SETTINGS_MODULE
+        value: loyalty_platform.settings
+      - key: SECRET_KEY
+        generateValue: true
+      - key: WEB_CONCURRENCY
+        value: 4
+      - key: DISABLE_COLLECTSTATIC
+        value: 0
+    plan: free
+
+  - type: worker
+    name: loyalty-worker
+    env: python
+    buildCommand: "pip install -r requirements.txt"
+    startCommand: "celery -A loyalty_platform worker --loglevel=info"
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.10.0
+      - key: DJANGO_SETTINGS_MODULE
+        value: loyalty_platform.settings
+      - key: SECRET_KEY
+        fromService:
+          name: loyalty-platform
+          type: web
+          property: env.SECRET_KEY
+    plan: free

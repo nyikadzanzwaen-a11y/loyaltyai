@@ -1,0 +1,93 @@
+{% extends 'base.html' %}
+{% block title %}AI Offer - {{ business.name }}{% endblock %}
+{% block content %}
+<div class="bg-gray-100 min-h-screen">
+  {% include 'tenants/_business_banner.html' with active_tab='offers' %}
+  <div class="container mx-auto px-4 py-8 max-w-3xl">
+    <div class="bg-white rounded-lg shadow-md p-6">
+      <h1 class="text-2xl font-bold mb-6">Generate AI Offer</h1>
+      <form id="aiOfferForm" class="grid grid-cols-1 md:grid-cols-2 gap-5" onsubmit="return false;">
+        {% csrf_token %}
+        <div class="ui-field md:col-span-2">
+          <label for="customer_id" class="ui-label">Customer ID (optional)</label>
+          <input type="text" id="customer_id" name="customer_id" class="ui-input" placeholder="e.g. 550e8400-e29b-41d4-a716-446655440000" pattern="[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}" aria-describedby="customer_id_help" />
+          <p id="customer_id_help" class="ui-help">Leave blank to generate a generic offer for your business. Provide a customer UUID to personalize.</p>
+        </div>
+        <div class="ui-field">
+          <label for="time_of_day" class="ui-label">Time of Day</label>
+          <select id="time_of_day" name="time_of_day" class="ui-select">
+            <option value="day">Day</option>
+            <option value="morning">Morning</option>
+            <option value="evening">Evening</option>
+            <option value="night">Night</option>
+          </select>
+          <p class="ui-help">Helps tailor points multipliers (e.g., Morning 2x, Evening 3x).</p>
+        </div>
+        <div class="ui-field">
+          <label for="day_of_week" class="ui-label">Day of Week</label>
+          <select id="day_of_week" name="day_of_week" class="ui-select">
+            <option value="weekday">Weekday</option>
+            <option value="weekend">Weekend</option>
+          </select>
+          <p class="ui-help">Weekends may increase discount offers.</p>
+        </div>
+        <div class="ui-field md:col-span-2">
+          <label for="target_segment" class="ui-label">Target Segment ID (optional)</label>
+          <input type="text" id="target_segment" name="target_segment" class="ui-input" placeholder="Segment UUID (optional)" pattern="[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}" aria-describedby="segment_help" />
+          <p id="segment_help" class="ui-help">If provided, the generated offer can be tagged to this segment for analytics.</p>
+        </div>
+        <div class="md:col-span-2">
+          <button id="generateBtn" class="inline-flex items-center gap-2 bg-gradient-to-r from-indigo-600 to-blue-600 text-white px-5 py-2.5 rounded-full shadow-md hover:from-indigo-500 hover:to-blue-500 hover:shadow-lg transform hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition">Generate Offer
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10.293 15.707a1 1 0 010-1.414L13.586 11H4a1 1 0 110-2h9.586l-3.293-3.293a1 1 0 111.414-1.414l5 5a1 1 0 010 1.414l-5 5a1 1 0 01-1.414 0z" clip-rule="evenodd"/></svg>
+          </button>
+        </div>
+      </form>
+    </div>
+    <pre id="aiOfferResult" class="mt-6 bg-gray-900 text-green-200 p-4 rounded overflow-x-auto text-sm"></pre>
+  </div>
+</div>
+{% endblock %}
+{% block extra_js %}
+<script>
+  function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+      const cookies = document.cookie.split(';');
+      for (let i = 0; i < cookies.length; i++) {
+        const cookie = cookies[i].trim();
+        if (cookie.substring(0, name.length + 1) === (name + '=')) {
+          cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+          break;
+        }
+      }
+    }
+    return cookieValue;
+  }
+
+  const form = document.getElementById('aiOfferForm');
+  const result = document.getElementById('aiOfferResult');
+  const btn = document.getElementById('generateBtn');
+
+  if (form) {
+    form.addEventListener('click', async (e) => {
+      if (e.target === btn) {
+        e.preventDefault();
+        btn.disabled = true;
+        btn.textContent = 'Generating...';
+        try {
+          const csrftoken = getCookie('csrftoken');
+          const payload = new FormData(form);
+          const resp = await fetch('', { method: 'POST', headers: { 'X-CSRFToken': csrftoken }, body: payload });
+          const data = await resp.json();
+          result.textContent = JSON.stringify(data, null, 2);
+        } catch (err) {
+          result.textContent = 'Error generating offer';
+        } finally {
+          btn.disabled = false;
+          btn.textContent = 'Generate Offer';
+        }
+      }
+    });
+  }
+</script>
+{% endblock %}
